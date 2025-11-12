@@ -23,7 +23,7 @@ public class FilosofosController {
         return "Simulación iniciada.";
     }
 
-    @PostMapping("/parar")
+    @PostMapping("/detener")
     public String stop() {
         service.close();
         return "Simulación detenida.";
