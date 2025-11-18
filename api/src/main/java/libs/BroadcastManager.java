@@ -82,7 +82,7 @@ public class BroadcastManager extends WebSocketServer {
                     send(conn, gson.toJson(payload));
                 }
             }
-            case "unsuscribe_channel" -> {
+            case "unsubscribe_channel" -> {
                 WebSocketAttachment attachment = conn.getAttachment();
                 if (attachment != null && dataMap != null) {
                     attachment.removeChannel(dataMap.get("channel"));
@@ -110,14 +110,14 @@ public class BroadcastManager extends WebSocketServer {
     @Override
     public void onError(WebSocket conn, Exception ex) {
         if (ex != null) {
-            System.out.println("WebSocket error: " + ex.getMessage());
+            System.out.println("Error: " + ex.getMessage());
         }
     }
 
     public static void send(String channel, String action, Object obj) {
         System.out.print("[WebSocket]: '" + action + "' to channel '" + channel + "'");
         if (obj != null)
-            System.out.print(" - Payload: " + gson.toJson(obj));
+            System.out.print(" - Contenido: " + gson.toJson(obj));
         System.out.println();
 
         WebSocket[] snapshot = BroadcastManager.getClientsSnapshot(channel);

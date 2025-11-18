@@ -41,12 +41,13 @@ export function ProductorConsumidorApiProvider({
       });
 
       if (!response.ok) {
-        console.error("Failed to start simulation");
-        return;
+        throw new Error(
+          "[Productor/Consumidor]: Error al iniciar la simulación"
+        );
       }
 
       setIsSimulationRunning(true);
-      console.log("Starting simulation...");
+      console.log("[Productor/Consumidor]: Iniciando simulación...");
     },
     []
   );
@@ -57,18 +58,19 @@ export function ProductorConsumidorApiProvider({
     });
 
     if (!response.ok) {
-      console.error("Failed to stop simulation");
-      return;
+      throw new Error("[Productor/Consumidor]: Error al detener la simulación");
     }
 
     setIsSimulationRunning(false);
-    console.log("Stopping simulation...");
+    console.log("[Productor/Consumidor]: Deteniendo simulación...");
   }, []);
 
   const getState = useCallback(async () => {
     const response = await fetch(`${PRODUCTOR_CONSUMIDOR_API_URL}/estado`);
     if (!response.ok) {
-      throw new Error("Failed to fetch simulation state");
+      throw new Error(
+        "[Productor/Consumidor]: Error al consultar el estado de la simulación"
+      );
     }
 
     const data = await response.json();
@@ -104,7 +106,7 @@ export const useProductorConsumidorApi = () => {
   const ctx = useContext(ProductorConsumidorApiContext);
   if (!ctx)
     throw new Error(
-      "useProductorConsumidorApi must be used inside a ProductorConsumidorApiProvider"
+      "[Productor/Consumidor]: useProductorConsumidorApi debe usarse dentro de un ProductorConsumidorApiProvider"
     );
   return ctx;
 };

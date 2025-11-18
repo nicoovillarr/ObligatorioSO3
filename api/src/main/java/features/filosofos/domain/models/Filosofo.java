@@ -63,7 +63,7 @@ public class Filosofo extends Thread implements AutoCloseable {
         try {
             mesaService.notifyState(id, nuevo);
         } catch (Exception e) {
-            System.out.println("Failed to notify state for filosofo " + id + ": " + e.getMessage());
+            System.out.println("Ocurrió un problema al notificar el estado del filósofo " + id + ": " + e.getMessage());
         }
     }
 

@@ -37,12 +37,11 @@ export function FilosofosApiProvider({
     });
 
     if (!response.ok) {
-      console.error("Failed to start simulation");
-      return;
+      throw new Error("[Filósofos]: Error al iniciar la simulación");
     }
 
     setIsSimulationRunning(true);
-    console.log("Starting simulation...");
+    console.log("[Filósofos]: Iniciando simulación...");
   }, []);
 
   const stopSimulation = useCallback(async () => {
@@ -51,18 +50,19 @@ export function FilosofosApiProvider({
     });
 
     if (!response.ok) {
-      console.error("Failed to stop simulation");
-      return;
+      throw new Error("[Filósofos]: Error al detener la simulación");
     }
 
     setIsSimulationRunning(false);
-    console.log("Stopping simulation...");
+    console.log("[Filósofos]: Deteniendo simulación...");
   }, []);
 
   const getState = useCallback(async () => {
     const response = await fetch(`${FILOSOFOS_API_URL}/estado`);
     if (!response.ok) {
-      throw new Error("Failed to fetch simulation state");
+      throw new Error(
+        "[Filósofos]: Error al consultar el estado de la simulación"
+      );
     }
 
     const data = await response.json();
@@ -86,7 +86,7 @@ export const useFilosofosApi = () => {
   const ctx = useContext(FilosofosApiContext);
   if (!ctx)
     throw new Error(
-      "useFilosofosApi must be used inside a FilosofosApiProvider"
+      "[Filósofos]: useFilosofosApi debe usarse dentro de un FilosofosApiProvider"
     );
   return ctx;
 };

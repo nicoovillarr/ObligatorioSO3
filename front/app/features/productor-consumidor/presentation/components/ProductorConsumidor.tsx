@@ -6,6 +6,7 @@ import { Productores } from "./Productores";
 import { Consumidores } from "./Consumidores";
 import { useProductorConsumidorApi } from "../hooks/useProductorConsumidorApi";
 import Button from "@/core/presentation/components/Button";
+import { toast } from "sonner";
 
 export function ProductorConsumidor() {
   const [productoresCount, setProductoresCount] = useState<number>(0);
@@ -22,16 +23,29 @@ export function ProductorConsumidor() {
     useProductorConsumidorApi();
 
   const buttonClickHandler = () => {
-    if (isSimulationRunning) {
-      stopSimulation();
-    } else {
-      setProductores(
-        new Array(productoresCount).fill(ProductorState.DESCANSANDO)
+    try {
+      if (isSimulationRunning) {
+        stopSimulation();
+        toast.info("Simulación de productor/consumidor detenida.");
+      } else {
+        setProductores(
+          new Array(productoresCount).fill(ProductorState.DESCANSANDO)
+        );
+        setConsumidores(
+          new Array(consumidoresCount).fill(ConsumidorState.DESCANSANDO)
+        );
+        startSimulation(5, productoresCount, consumidoresCount);
+        toast.info("Simulación de productor/consumidor iniciada.");
+      }
+    } catch (error) {
+      console.error(
+        "[Productor/Consumidor]: Error al iniciar/detener la simulación:",
+        error
       );
-      setConsumidores(
-        new Array(consumidoresCount).fill(ConsumidorState.DESCANSANDO)
+
+      toast.error(
+        "Error al iniciar/detener la simulación de productor/consumidor. Por favor, intente nuevamente."
       );
-      startSimulation(5, productoresCount, consumidoresCount);
     }
   };
 
@@ -65,9 +79,18 @@ export function ProductorConsumidor() {
         if (isRunning) {
           setBufferSize(_bufferSize);
           setBufferCapacity(_bufferCapacity);
+
+          toast.info(
+            "Simulación de productor/consumidor en curso recuperada al cargar la página."
+          );
         }
       } catch (error) {
-        console.error("Error fetching initial state:", error);
+        console.error(
+          "[Productor/Consumidor]: Error al consultar el estado inicial:",
+          error
+        );
+
+        toast.error("Error al consultar el estado inicial de la simulación.");
       }
     };
 
@@ -102,9 +125,6 @@ export function ProductorConsumidor() {
 
         case "UPDATE_BUFFER":
           const { size, capacity } = data;
-
-          console.log("Buffer update:", size, capacity);
-
           setBufferCapacity(capacity);
           setBufferSize(size);
           break;

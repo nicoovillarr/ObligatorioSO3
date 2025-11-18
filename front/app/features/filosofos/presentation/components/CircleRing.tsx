@@ -50,7 +50,7 @@ export default function Mesa({ filosofos, width, height }: MesaProps) {
           break;
 
         default:
-          throw new Error("Estado de filósofo no manejado");
+          throw new Error("[Filósofos]: Estado de filósofo no manejado");
       }
 
       ctx.fill();

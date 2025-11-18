@@ -4,6 +4,7 @@ import FilosofoState from "../../domain/entities/FilosofoState";
 import Button from "@/core/presentation/components/Button";
 import { useFilosofosApi } from "../hooks/useFilosofosApi";
 import { useWebSocket } from "@/core/presentation/hoooks/useWebsocket";
+import { toast } from "sonner";
 
 export default function Filosofos() {
   const { isSimulationRunning, getState, startSimulation, stopSimulation } =
@@ -17,11 +18,24 @@ export default function Filosofos() {
   const { subscribe, unsubscribe } = useWebSocket();
 
   const buttonClickHandler = () => {
-    if (isSimulationRunning) {
-      stopSimulation();
-    } else {
-      setFilosofos(new Array(count).fill(FilosofoState.PENSANDO));
-      startSimulation(count);
+    try {
+      if (isSimulationRunning) {
+        stopSimulation();
+        toast.info("Simulación de filósofos detenida.");
+      } else {
+        setFilosofos(new Array(count).fill(FilosofoState.PENSANDO));
+        startSimulation(count);
+        toast.info("Simulación de filósofos iniciada.");
+      }
+    } catch (error) {
+      console.error(
+        "[Filósofos]: Error al iniciar/detener la simulación:",
+        error
+      );
+
+      toast.error(
+        "Error al iniciar/detener la simulación de filósofos. Por favor, intente nuevamente."
+      );
     }
   };
 
@@ -72,9 +86,19 @@ export default function Filosofos() {
 
         if (isRunning) {
           setCount(filosofosCount);
+          toast.info(
+            "Simulación de filósofos en curso recuperada al cargar la página."
+          );
         }
       } catch (error) {
-        console.error("Error fetching initial state:", error);
+        console.error(
+          "[Filósofos]: Error al consultar el estado inicial:",
+          error
+        );
+
+        toast.error(
+          "Error al consultar el estado inicial de la simulación."
+        );
       }
     };
 

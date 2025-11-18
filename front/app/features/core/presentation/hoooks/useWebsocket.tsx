@@ -38,15 +38,15 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const connect = useCallback(() => {
     if (socketRef.current || !WEBSOCKET_URL) return;
 
-    console.log("[WebSocket]: Connecting to WebSocket:", WEBSOCKET_URL);
+    console.log("[WebSocket]: Conectando al WebSocket:", WEBSOCKET_URL);
 
     const socket = new WebSocket(WEBSOCKET_URL);
     socketRef.current = socket;
 
     socket.onopen = () => {
-      console.log("[WebSocket]: WebSocket connected successfully");
+      console.log("[WebSocket]: WebSocket conectado correctamente.");
       if (error.current) {
-        console.log("Reconnected to the server.");
+        console.log("[WebSocket]: Reconectado al servidor.");
         error.current = false;
       }
       reconnectAttemptsRef.current = 0;
@@ -56,9 +56,10 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     };
 
     socket.onclose = () => {
-      console.warn("[WebSocket]: WebSocket closed");
-      if (!error.current)
-        console.error("The connection to the server was lost.");
+      console.warn("[WebSocket]: WebSocket cerrado.");
+      if (!error.current) {
+        console.error("[WebSocket]: La conexión con el servidor se perdió.");
+      }
       error.current = true;
       socketRef.current = null;
       setConnected(false);
@@ -68,7 +69,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     };
 
     socket.onerror = (err) => {
-      console.error("[WebSocket]: WebSocket error", err);
+      console.error("[WebSocket]: Error en WebSocket", err);
       socket.close();
       stopPing();
       abortReconnect();
@@ -79,7 +80,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         const message: IBroadcastResponse = JSON.parse(event.data);
         handleMessage(message);
       } catch (e) {
-        console.error("[WebSocket]: Failed to parse WS message:", e);
+        console.error("[WebSocket]: Error al parsear el mensaje WS:", e);
       }
     };
   }, [WEBSOCKET_URL]);
@@ -104,11 +105,13 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     if (reconnectRef.current || socketRef.current) return;
 
     if (reconnectAttemptsRef.current >= 2) {
-      console.error("[WebSocket]: Max reconnect attempts reached. Giving up.");
+      console.error(
+        "[WebSocket]: Se alcanzó el máximo de intentos de reconexión. Abandonando."
+      );
       return;
     }
 
-    console.log(`[WebSocket]: Reconnecting in 5s...`);
+    console.log(`[WebSocket]: Reconectando en 5s...`);
     reconnectRef.current = setTimeout(() => {
       reconnectRef.current = null;
       reconnectAttemptsRef.current++;
@@ -143,9 +146,9 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       if (!msg) continue;
 
       console.log(
-        `[WebSocket]: Sending queued message of type: ${
+        `[WebSocket]: Enviando mensaje en cola de tipo: ${
           msg.type
-        }, data: ${JSON.stringify(msg.data)}`
+        }, datos: ${JSON.stringify(msg.data)}`
       );
       socket.send(JSON.stringify(msg));
     }
@@ -156,7 +159,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     const msgWithToken = { type, data };
     if (socket && socket.readyState === WebSocket.OPEN) {
       console.log(
-        `[WebSocket]: Sending message of type: ${type}, data: ${JSON.stringify(
+        `[WebSocket]: Enviando mensaje de tipo: ${type}, datos: ${JSON.stringify(
           data
         )}`
       );
@@ -167,7 +170,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const subscribe = useCallback((channel: string, cb: MessageHandler) => {
-    console.log(`[WebSocket]: Subscribing to channel: ${channel}`);
+    console.log(`[WebSocket]: Suscribiéndose al canal: ${channel}`);
 
     subsRef.current[channel] = cb;
     sendMessage("SUBSCRIBE_CHANNEL", { channel });
@@ -175,28 +178,26 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const unsubscribe = useCallback((channel: string) => {
-    console.log(`[WebSocket]: Unsubscribing from channel: ${channel}`);
+    console.log(`[WebSocket]: Desuscribiéndose del canal: ${channel}`);
 
     delete subsRef.current[channel];
     sendMessage("UNSUBSCRIBE_CHANNEL", { channel });
   }, []);
 
   const handleMessage = (message: IBroadcastResponse) => {
-    console.log(`[WebSocket]: Received WS message: ${JSON.stringify(message)}`);
+    console.log(`[WebSocket]: Mensaje WS recibido: ${JSON.stringify(message)}`);
 
     switch (message.type) {
       case "PONG":
-        console.debug("[WebSocket]: PONG received");
+        console.debug("[WebSocket]: PONG recibido");
         return;
 
       case "SUBSCRIBED_CHANNEL":
-        console.log(`[WebSocket]: Subscribed to channel: ${message.channel}`);
+        console.log(`[WebSocket]: Suscrito al canal: ${message.channel}`);
         return;
 
       case "UNSUBSCRIBED_CHANNEL":
-        console.log(
-          `[WebSocket]: Unsubscribed from channel: ${message.channel}`
-        );
+        console.log(`[WebSocket]: Desuscrito del canal: ${message.channel}`);
         return;
 
       default:
@@ -206,7 +207,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
         if (!handler) {
           console.warn(
-            `[WebSocket]: No handler for message type: ${message.type}, channel: ${message.channel}`
+            `[WebSocket]: No manejador para el tipo de mensaje: ${message.type}, canal: ${message.channel}`
           );
           return;
         }
@@ -234,6 +235,8 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 export const useWebSocket = () => {
   const ctx = useContext(WebSocketContext);
   if (!ctx)
-    throw new Error("useWebSocket must be used inside a WebSocketProvider");
+    throw new Error(
+      "[WebSocket]: useWebSocket debe usarse dentro de un WebSocketProvider"
+    );
   return ctx;
 };

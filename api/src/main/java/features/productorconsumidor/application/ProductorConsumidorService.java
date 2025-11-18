@@ -51,6 +51,12 @@ public class ProductorConsumidorService implements AutoCloseable {
     public void close() {
         productores.forEach(Productor::close);
         consumidores.forEach(Consumidor::close);
+
+        synchronized (lock) {
+            isRunning = false;
+            productoresCount = 0;
+            consumidoresCount = 0;
+        }
     }
 
     public void reiniciar() {

@@ -1,3 +1,4 @@
+import { Toaster } from "sonner";
 import { WebSocketProvider } from "../hoooks/useWebsocket";
 import AppBar from "./AppBar";
 import Footer from "./Footer";
@@ -18,6 +19,7 @@ export default function MainLayout({
       <main className="w-screen min-h-screen overflow-x-hidden bg-linear-to-b from-gray-950 to-gray-900 text-white flex flex-col">
         <AppBar title={title} addBackButton={addBackButton} />
         <div className="flex-1">{children}</div>
+        <Toaster />
         <Footer />
       </main>
     </WebSocketProvider>
