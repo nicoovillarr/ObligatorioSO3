@@ -12,6 +12,7 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 
 public class BroadcastManager extends WebSocketServer {
     private static final Set<WebSocket> clients = Collections.synchronizedSet(new HashSet<>());
@@ -61,27 +62,48 @@ public class BroadcastManager extends WebSocketServer {
         }
 
         Map<String, String> receivedMessage = gson.fromJson(message, HashMap.class);
-        String action = receivedMessage.get("action").toLowerCase();
-        String data = receivedMessage.get("data");
+        String type = receivedMessage.get("type").toLowerCase();
+        LinkedTreeMap<String, String> dataMap = receivedMessage.get("data") != null
+                ? gson.fromJson(gson.toJson(receivedMessage.get("data")), LinkedTreeMap.class)
+                : null;
 
-        switch (action) {
-            case "subscribe" -> {
+        switch (type) {
+            case "subscribe_channel" -> {
                 WebSocketAttachment attachment = conn.getAttachment();
-                if (attachment != null && data != null) {
-                    attachment.addChannel(data);
-                    System.out.println("Cliente " + attachment.getUuid() + " suscrito al canal: " + data);
+                if (attachment != null && dataMap != null) {
+                    attachment.addChannel(dataMap.get("channel"));
+                    System.out.println(
+                            "Cliente " + attachment.getUuid() + " suscrito al canal: " +
+                                    dataMap.get("channel"));
+
+                    HashMap<String, String> payload = new HashMap<>();
+                    payload.put("type", "SUBSCRIBED_CHANNEL");
+                    payload.put("message", "Suscripción exitosa al canal: " + dataMap.get("channel"));
+                    send(conn, gson.toJson(payload));
+                }
+            }
+            case "unsuscribe_channel" -> {
+                WebSocketAttachment attachment = conn.getAttachment();
+                if (attachment != null && dataMap != null) {
+                    attachment.removeChannel(dataMap.get("channel"));
+                    System.out.println(
+                            "Cliente " + attachment.getUuid() + " desuscrito del canal: " +
+                                    dataMap.get("channel"));
+
+                    HashMap<String, String> payload = new HashMap<>();
+                    payload.put("type", "UNSUBSCRIBED_CHANNEL");
+                    payload.put("message", "Desuscripción exitosa del canal: " + dataMap.get("channel"));
+                    send(conn, gson.toJson(payload));
                 }
             }
 
-            case "unsubscribe" -> {
-                WebSocketAttachment attachment = conn.getAttachment();
-                if (attachment != null && data != null) {
-                    attachment.removeChannel(data);
-                    System.out.println("Cliente " + attachment.getUuid() + " desuscrito del canal: " + data);
-                }
+            case "ping" -> {
+                HashMap<String, String> payload = new HashMap<>();
+                payload.put("message", "pong");
+                send(conn, gson.toJson(payload));
             }
-            
-            default -> System.out.println("Acción desconocida recibida: " + action);
+
+            default -> System.out.println("Acción desconocida recibida: " + type);
         }
     }
 
@@ -101,6 +123,7 @@ public class BroadcastManager extends WebSocketServer {
         WebSocket[] snapshot = BroadcastManager.getClientsSnapshot(channel);
 
         Map<String, String> payload = new HashMap<String, String>();
+        payload.put("channel", channel);
         payload.put("action", action);
         if (obj != null) {
             payload.put("data_type", obj.getClass().getSimpleName());
@@ -133,10 +156,10 @@ public class BroadcastManager extends WebSocketServer {
     private static WebSocket[] getClientsSnapshot(String channel) {
         synchronized (clients) {
             return clients
-                .stream()
-                .filter((x) -> x.getAttachment() != null &&
-                    ((WebSocketAttachment) x.getAttachment()).getChannels().contains(channel))
-                .toArray(WebSocket[]::new);
+                    .stream()
+                    .filter((x) -> x.getAttachment() != null &&
+                            ((WebSocketAttachment) x.getAttachment()).getChannels().contains(channel))
+                    .toArray(WebSocket[]::new);
         }
     }
 }
