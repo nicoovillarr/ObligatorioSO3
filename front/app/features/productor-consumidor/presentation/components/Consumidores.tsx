@@ -23,7 +23,7 @@ export function Consumidores({ consumidores, size = 64 }: ConsumidoresProps) {
           {consumidor === ConsumidorState.DESCANSANDO
             ? "😴"
             : consumidor === ConsumidorState.CONSUMIENDO
-            ? "🍽️"
+            ? "🏃‍♀️"
             : "⌛"}
         </div>
       ))}

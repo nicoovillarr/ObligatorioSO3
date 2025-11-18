@@ -28,6 +28,7 @@ export function ProductorConsumidor() {
         stopSimulation();
         toast.info("Simulación de productor/consumidor detenida.");
       } else {
+        setBufferSize(0);
         setProductores(
           new Array(productoresCount).fill(ProductorState.DESCANSANDO)
         );
@@ -95,7 +96,7 @@ export function ProductorConsumidor() {
     };
 
     fetchInitialState();
-  }, [getState]);
+  }, []);
 
   useEffect(() => {
     const key = "PRODUCTOR_CONSUMIDOR";
@@ -110,8 +111,12 @@ export function ProductorConsumidor() {
             if (!prevProductores) return prevProductores;
             const newProductores = [...prevProductores];
             newProductores[id] = estado as ProductorState;
+
             return newProductores;
           });
+          console.log(
+            `[Productor/Consumidor]: Productor ${id} cambió a estado ${estado}`
+          );
           break;
 
         case "UPDATE_CONSUMIDOR":
@@ -119,8 +124,12 @@ export function ProductorConsumidor() {
             if (!prevConsumidores) return prevConsumidores;
             const newConsumidores = [...prevConsumidores];
             newConsumidores[id] = estado as ConsumidorState;
+
             return newConsumidores;
           });
+          console.log(
+            `[Productor/Consumidor]: Consumidor ${id} cambió a estado ${estado}`
+          );
           break;
 
         case "UPDATE_BUFFER":

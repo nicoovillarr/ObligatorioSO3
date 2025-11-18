@@ -53,8 +53,8 @@ public class BufferService implements IBufferService {
 
         mutex.release();
 
-        notificarEstadoProductor(idProductor, EstadoProductor.DESCANSANDO);
-        Thread.sleep(2500);
+        // notificarEstadoProductor(idProductor, EstadoProductor.DESCANSANDO);
+        // Thread.sleep(2500);
 
         full.release();
     }
@@ -63,8 +63,8 @@ public class BufferService implements IBufferService {
     public int consumir(int idConsumidor) throws InterruptedException {
         full.acquire();
 
-        notificarEstadoConsumidor(idConsumidor, EstadoConsumidor.DESCANSANDO);
-        Thread.sleep(2500);
+        // notificarEstadoConsumidor(idConsumidor, EstadoConsumidor.DESCANSANDO);
+        // Thread.sleep(2500);
 
         mutex.acquire();
 

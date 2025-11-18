@@ -64,8 +64,11 @@ export default function Filosofos() {
 
         const newFilosofos = [...prevFilosofos];
         newFilosofos[id] = newState;
+
         return newFilosofos;
       });
+
+      console.log(`[Filósofos]: Filósofo ${id} cambió a estado ${estado}`);
     });
 
     return () => {
@@ -96,9 +99,7 @@ export default function Filosofos() {
           error
         );
 
-        toast.error(
-          "Error al consultar el estado inicial de la simulación."
-        );
+        toast.error("Error al consultar el estado inicial de la simulación.");
       }
     };
 

@@ -50,7 +50,10 @@ public class ProductorConsumidorService implements AutoCloseable {
     @Override
     public void close() {
         productores.forEach(Productor::close);
+        productores.clear();
+
         consumidores.forEach(Consumidor::close);
+        consumidores.clear();
 
         synchronized (lock) {
             isRunning = false;
