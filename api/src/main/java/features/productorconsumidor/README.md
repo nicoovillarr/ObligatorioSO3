@@ -25,7 +25,7 @@ Este proyecto implementa el problema del **Productor-Consumidor** en Java utiliz
 
 Cada productor o consumidor adquiere los permisos necesarios antes de interactuar con el buffer y los libera al terminar, asegurando un flujo ordenado y sin interferencias.
 
-## Prevención de deadlock
+### Prevención de deadlock
 
 El diseño de la solución evita el deadlock mediante el uso adecuado de semáforos y la secuencia de adquisición:
 
@@ -33,7 +33,7 @@ El diseño de la solución evita el deadlock mediante el uso adecuado de semáfo
 2. Un consumidor primero adquiere el semáforo `full` (verificando ítems disponibles) y luego `mutex`.
 3. Al finalizar, ambos liberan los semáforos en el orden inverso.
 
-## Diseño del proyecto (enfoque DDD)
+## Diseño del proyecto
 
 La organización del código sigue una estructura inspirada en **Domain-Driven Design (DDD)**, que separa responsabilidades y facilita la escalabilidad:
 

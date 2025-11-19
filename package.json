@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "cd front && pnpm install && cd ../api && mvn clean install",
     "api": "cd api && mvn spring-boot:run",
     "front": "cd front && pnpm dev",
     "dev": "concurrently \"pnpm api\" \"pnpm front\""
